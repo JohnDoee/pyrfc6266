@@ -547,9 +547,9 @@ def test_greenbytes_attwithfn2231ws3():
     assert pyrfc6266.parse_filename(s) == "foo-ä.html"
 
 
-def test_greenbytes_attwithfn2231quot():
-    with pytest.raises(pyrfc6266.ParseException):
-        pyrfc6266.parse(r'''attachment; filename*="UTF-8''foo-%c3%a4.html"''')
+# def test_greenbytes_attwithfn2231quot(): # Disabled due to real-world situation
+#     with pytest.raises(pyrfc6266.ParseException):
+#         pyrfc6266.parse(r'''attachment; filename*="UTF-8''foo-%c3%a4.html"''')
 
 
 def test_greenbytes_attwithfn2231quot2():
@@ -768,3 +768,8 @@ def test_requests_undiscoverable():
     response = requests.Response()
     response.url = "https://example.com/"
     assert pyrfc6266.requests_response_to_filename(response).startswith("unknown-")
+
+
+def test_fix_issue_001():
+    s = r'''atachment;filename*="utf-8' '100MB.zip"'''
+    assert pyrfc6266.parse_filename(s) == '100MB.zip'

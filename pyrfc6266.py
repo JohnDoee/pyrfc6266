@@ -51,7 +51,7 @@ ext_value = Combine(
         CaselessLiteral("UTF-8") | CaselessLiteral("ISO-8859-1") | Empty()
     ).set_results_name("encoding")
     + Literal("'")
-    + Optional(Word(alphas, min=2, max=3)).set_results_name("language")
+    + Optional(Word(alphas + ' ', min=1, max=3)).set_results_name("language")
     + Literal("'")
     + OneOrMore(
         Word(
@@ -65,7 +65,7 @@ disp_ext_parm = (
     + value.set_results_name("value*")
 ) | (
     (Combine(unencoded_token + Literal("*")) + Literal("=")).set_results_name("parm*")
-    + token.set_results_name("value*")
+    + value.set_results_name("value*")
 )
 
 # filename_parm = (Combine(Literal("filename").set_results_name("parm*") + Literal('=')) + value) | (Literal("filename*=") + ext_value)
