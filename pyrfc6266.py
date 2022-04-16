@@ -1,7 +1,8 @@
 import re
+import typing
 import uuid
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from urllib.parse import unquote, urlparse
 
 from pyparsing import (
@@ -16,8 +17,8 @@ from pyparsing import (
     Word,
     ZeroOrMore,
     alphas,
+    ParseException,
 )
-from pyparsing.exceptions import ParseException
 
 __all__ = [
     "parse",
@@ -141,18 +142,20 @@ def secure_filename(filename: str) -> str:
     return filename.replace("\\", "_").replace("/", "_")
 
 
-def parse_filename(header: str) -> str:
+def parse_filename(header: str, enforce_content_disposition_type: bool=False) -> str:
     """Returns a safe filename from a content-disposition header
 
     Args:
         header: The actual header value as string
+        enforce_content_disposition_type: Enforce content-disposition type to one of the two known types.
 
     Returns:
         None if no filename could be found
         str if a filename could be found
     """
     content_disposition_type, all_content_disposition = parse(header)
-    if content_disposition_type not in ["attachment", "inline"]:
+    allowed_content_dispositions = ["attachment", "inline"]
+    if enforce_content_disposition_type and content_disposition_type not in allowed_content_dispositions:
         return None
 
     def normal_filename(content_disposition):
@@ -196,11 +199,12 @@ def parse_filename(header: str) -> str:
     return filename
 
 
-def requests_response_to_filename(response) -> str:
+def requests_response_to_filename(response, enforce_content_disposition_type: bool=False) -> str:
     """Turn a requests response into a filename
 
     Args:
         response: `requests.Response`
+        enforce_content_disposition_type: Enforce content-disposition type to one of the two known types.
 
     Returns:
         a filename as a string.
@@ -208,7 +212,7 @@ def requests_response_to_filename(response) -> str:
     content_disposition = response.headers.get("Content-Disposition")
     filename = None
     if content_disposition:
-        filename = parse_filename(content_disposition)
+        filename = parse_filename(content_disposition, enforce_content_disposition_type=enforce_content_disposition_type)
 
     if not filename:
         url = urlparse(response.url)

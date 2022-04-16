@@ -769,7 +769,17 @@ def test_requests_undiscoverable():
     response.url = "https://example.com/"
     assert pyrfc6266.requests_response_to_filename(response).startswith("unknown-")
 
+def test_fix_issue_001_known_disposition():
+    s = r'''attachment;filename*="utf-8' '100MB.zip"'''
+    assert pyrfc6266.parse_filename(s) == '100MB.zip'
 
-def test_fix_issue_001():
+
+def test_fix_issue_001_unknown_disposition():
+    s = r'''atachment;filename*="utf-8' '100MB.zip"'''
+    assert pyrfc6266.parse_filename(s, enforce_content_disposition_type=True) == None
+
+
+def test_fix_issue_001_allowed_disposition():
     s = r'''atachment;filename*="utf-8' '100MB.zip"'''
     assert pyrfc6266.parse_filename(s) == '100MB.zip'
+
