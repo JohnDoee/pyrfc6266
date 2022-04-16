@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name="pyrfc6266",
-    version="1.0.0",
+    version="1.0.1",
     author="Anders Jensen",
     author_email="andersandjensen@gmail.com",
     description="RFC6266 implementation in Python",

@@ -12,12 +12,12 @@ from pyparsing import (
     Literal,
     OneOrMore,
     Optional,
+    ParseException,
     QuotedString,
     Regex,
     Word,
     ZeroOrMore,
     alphas,
-    ParseException,
 )
 
 __all__ = [
@@ -27,6 +27,7 @@ __all__ = [
     "requests_response_to_filename",
     "ContentDisposition",
 ]
+
 
 @dataclass
 class ContentDisposition:
@@ -52,7 +53,7 @@ ext_value = Combine(
         CaselessLiteral("UTF-8") | CaselessLiteral("ISO-8859-1") | Empty()
     ).set_results_name("encoding")
     + Literal("'")
-    + Optional(Word(alphas + ' ', min=1, max=3)).set_results_name("language")
+    + Optional(Word(alphas + " ", min=1, max=3)).set_results_name("language")
     + Literal("'")
     + OneOrMore(
         Word(
@@ -142,7 +143,7 @@ def secure_filename(filename: str) -> str:
     return filename.replace("\\", "_").replace("/", "_")
 
 
-def parse_filename(header: str, enforce_content_disposition_type: bool=False) -> str:
+def parse_filename(header: str, enforce_content_disposition_type: bool = False) -> str:
     """Returns a safe filename from a content-disposition header
 
     Args:
@@ -155,7 +156,10 @@ def parse_filename(header: str, enforce_content_disposition_type: bool=False) ->
     """
     content_disposition_type, all_content_disposition = parse(header)
     allowed_content_dispositions = ["attachment", "inline"]
-    if enforce_content_disposition_type and content_disposition_type not in allowed_content_dispositions:
+    if (
+        enforce_content_disposition_type
+        and content_disposition_type not in allowed_content_dispositions
+    ):
         return None
 
     def normal_filename(content_disposition):
@@ -199,7 +203,9 @@ def parse_filename(header: str, enforce_content_disposition_type: bool=False) ->
     return filename
 
 
-def requests_response_to_filename(response, enforce_content_disposition_type: bool=False) -> str:
+def requests_response_to_filename(
+    response, enforce_content_disposition_type: bool = False
+) -> str:
     """Turn a requests response into a filename
 
     Args:
@@ -212,7 +218,10 @@ def requests_response_to_filename(response, enforce_content_disposition_type: bo
     content_disposition = response.headers.get("Content-Disposition")
     filename = None
     if content_disposition:
-        filename = parse_filename(content_disposition, enforce_content_disposition_type=enforce_content_disposition_type)
+        filename = parse_filename(
+            content_disposition,
+            enforce_content_disposition_type=enforce_content_disposition_type,
+        )
 
     if not filename:
         url = urlparse(response.url)
