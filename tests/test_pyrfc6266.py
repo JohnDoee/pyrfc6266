@@ -175,9 +175,9 @@ def test_greenbytes_attwithtokfncommanq():
         pyrfc6266.parse(r"""attachment; filename=foo,bar.html""")
 
 
-def test_greenbytes_attwithasciifilenamenqs():
-    with pytest.raises(pyrfc6266.ParseException):
-        pyrfc6266.parse(r"""attachment; filename=foo.html ;""")
+# def test_greenbytes_attwithasciifilenamenqs(): # Removed to accommodate real-world scenarios
+#     with pytest.raises(pyrfc6266.ParseException):
+#         pyrfc6266.parse(r"""attachment; filename=foo.html ;""")
 
 
 def test_greenbytes_attemptyparam():
@@ -783,3 +783,7 @@ def test_fix_issue_001_allowed_disposition():
     s = r'''atachment;filename*="utf-8' '100MB.zip"'''
     assert pyrfc6266.parse_filename(s) == '100MB.zip'
 
+
+def test_real_world_example_001():
+    s = r'''attachment; filename=100MB.zip;'''
+    assert pyrfc6266.parse_filename(s) == '100MB.zip'

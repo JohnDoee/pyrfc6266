@@ -80,7 +80,7 @@ disposition_type = (
 
 parser = disposition_type.set_results_name("type") + ZeroOrMore(
     Literal(";") + disposition_parm
-)
+) + Optional(";")
 
 INVALID_ISO8859_1_CHARACTERS = set(
     bytes(list(range(0, 32)) + list(range(127, 160))).decode("iso-8859-1")
