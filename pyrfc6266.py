@@ -1,8 +1,7 @@
 import re
-import typing
 import uuid
 from dataclasses import dataclass
-from typing import List, Tuple, Union
+from typing import List, Tuple
 from urllib.parse import unquote, urlparse
 
 from pyparsing import (

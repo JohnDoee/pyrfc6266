@@ -19,6 +19,9 @@ setup(
     install_requires=[
         "pyparsing~=3.0.7",
     ],
+    package_data = {
+        'pyrfc6266': ['py.typed'],
+    },
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
